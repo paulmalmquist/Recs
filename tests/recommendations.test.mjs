@@ -1,0 +1,24 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import ts from 'typescript';
+import {mkdtemp,readFile,writeFile,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {pathToFileURL} from 'node:url';
+const dir=await mkdtemp(join(tmpdir(),'aim-tests-'));
+for(const name of ['domain','catalog','recommendations']){const source=await readFile(new URL(`../lib/${name}.ts`,import.meta.url),'utf8');const js=ts.transpileModule(source,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ES2022}}).outputText.replaceAll("'./catalog'","'./catalog.mjs'");await writeFile(join(dir,name+'.mjs'),js);}
+const {catalog,personas,eligible}=await import(pathToFileURL(join(dir,'catalog.mjs')));
+const {rankApps,diversify}=await import(pathToFileURL(join(dir,'recommendations.mjs')));
+const rank=(p=personas[0],s=[],d=[],e=[])=>rankApps(catalog,p,s,d,e,Date.parse('2026-09-29T00:00:00Z'));
+test('all recommendations obey eligibility and suppress retired apps',()=>{for(const p of personas){const r=rank(p);assert.ok(r.length>0);assert.ok(r.every(a=>eligible(a,p)));assert.ok(!r.some(a=>a.id==='legacy-tracker'));}});
+test('the quality profile never receives the architect-only pipeline app',()=>{assert.ok(!rank(personas[2]).some(a=>a.id==='pipeline-observer'));});
+test('role and data activity change ranking',()=>{assert.notEqual(rank(personas[0])[0].id,rank(personas[1])[0].id);assert.equal(rank(personas[0])[0].id,'data-health');});
+test('cold-start profile gets eligible results without activity',()=>{assert.ok(rank(personas[3]).length>=6);assert.equal(rank(personas[3])[0].domain,'Engineering');});
+test('saving an app raises related app relevance',()=>{const id='pipeline-observer';assert.ok(rank(personas[0],['data-health']).find(a=>a.id===id).score>rank().find(a=>a.id===id).score);});
+test('dismissing removes a candidate without deleting its catalog record',()=>{assert.ok(!rank(personas[0],[],['data-health']).some(a=>a.id==='data-health'));assert.ok(catalog.some(a=>a.id==='data-health'));});
+test('signals sum to the shown relevance score',()=>{for(const a of rank()){assert.equal(a.score,Math.max(0,a.signals.reduce((s,x)=>s+x.points,0)));}});
+test('stale-data warnings lower relevance',()=>{const a=rank().find(a=>a.id==='material-readiness');assert.equal(a.signals.find(x=>x.label==='Availability warning').points,-12);});
+test('recent launches influence affinity and decay with age',()=>{const event={app_id:'test-explorer',event_type:'launch',created_at:'2026-09-28T00:00:00Z'};const a=rank(personas[0],[],[],[event]).find(x=>x.id==='test-explorer');const b=rank(personas[0],[],[],[{...event,created_at:'2025-01-01T00:00:00Z'}]).find(x=>x.id==='test-explorer');assert.ok(a.score>b.score);});
+test('impressions do not masquerade as preference',()=>{assert.deepEqual(rank(personas[0],[],[],[{app_id:'test-explorer',event_type:'impression',created_at:'2026-09-28T00:00:00Z'}]),rank());});
+test('a six-app shelf includes several domains without duplicates',()=>{const r=diversify(rank(),6);assert.equal(r.length,6);assert.equal(new Set(r.map(x=>x.id)).size,6);assert.ok(new Set(r.map(x=>x.domain)).size>=3);});
+process.on('exit',()=>{void rm(dir,{recursive:true,force:true})});

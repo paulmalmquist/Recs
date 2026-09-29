@@ -1,0 +1,5 @@
+import { sqliteTable, text, primaryKey, index } from 'drizzle-orm/sqlite-core';
+export const profiles = sqliteTable('profiles', { userId: text('user_id').primaryKey(), persona: text('persona').notNull().default('architect') });
+export const savedApps = sqliteTable('saved_apps', { userId: text('user_id').notNull(), appId: text('app_id').notNull(), savedAt: text('saved_at').notNull() }, t => [primaryKey({ columns: [t.userId, t.appId] })]);
+export const dismissals = sqliteTable('dismissals', { userId: text('user_id').notNull(), appId: text('app_id').notNull(), createdAt: text('created_at').notNull() }, t => [primaryKey({ columns: [t.userId, t.appId] })]);
+export const events = sqliteTable('events', { id: text('id').primaryKey(), userId: text('user_id').notNull(), appId: text('app_id').notNull(), eventType: text('event_type').notNull(), createdAt: text('created_at').notNull(), requestId: text('request_id'), position: text('position'), surface: text('surface'), modelVersion: text('model_version').notNull() }, t => [index('idx_events_user_time').on(t.userId, t.createdAt)]);
