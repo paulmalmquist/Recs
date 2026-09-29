@@ -1,0 +1,5 @@
+__pycache__/
+.venv/
+/demo/input.json
+/demo/context.json
+/demo/scores.jsonl

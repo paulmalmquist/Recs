@@ -1,0 +1,149 @@
+{
+  "synthetic": true,
+  "k": 3,
+  "task": "next-window usage including repeat use",
+  "split": {
+    "train_end": "2026-08-10T00:00:00Z",
+    "validation_end": "2026-08-20T00:00:00Z",
+    "test_end": "2026-08-30T00:00:00Z"
+  },
+  "event_counts": [
+    1810,
+    466,
+    468
+  ],
+  "validation_trials": [
+    {
+      "config": {
+        "factors": 3,
+        "regularization": 1.0,
+        "alpha": 10,
+        "iterations": 20,
+        "seed": 42
+      },
+      "metrics": {
+        "als": {
+          "recall_at_k": 0.5189814814814815,
+          "ndcg_at_k": 0.5076819107010281,
+          "evaluated_users": 72,
+          "recommended_items": 11
+        },
+        "rules": {
+          "recall_at_k": 0.2787037037037037,
+          "ndcg_at_k": 0.255964704059607,
+          "evaluated_users": 72,
+          "recommended_items": 7
+        },
+        "popularity": {
+          "recall_at_k": 0.3483796296296296,
+          "ndcg_at_k": 0.3571445802007083,
+          "evaluated_users": 72,
+          "recommended_items": 3
+        }
+      }
+    },
+    {
+      "config": {
+        "factors": 6,
+        "regularization": 1.0,
+        "alpha": 10,
+        "iterations": 20,
+        "seed": 42
+      },
+      "metrics": {
+        "als": {
+          "recall_at_k": 0.5990740740740741,
+          "ndcg_at_k": 0.6186964655368974,
+          "evaluated_users": 72,
+          "recommended_items": 11
+        },
+        "rules": {
+          "recall_at_k": 0.2787037037037037,
+          "ndcg_at_k": 0.255964704059607,
+          "evaluated_users": 72,
+          "recommended_items": 7
+        },
+        "popularity": {
+          "recall_at_k": 0.3483796296296296,
+          "ndcg_at_k": 0.3571445802007083,
+          "evaluated_users": 72,
+          "recommended_items": 3
+        }
+      }
+    },
+    {
+      "config": {
+        "factors": 6,
+        "regularization": 5.0,
+        "alpha": 10,
+        "iterations": 20,
+        "seed": 42
+      },
+      "metrics": {
+        "als": {
+          "recall_at_k": 0.6875,
+          "ndcg_at_k": 0.7144332860477113,
+          "evaluated_users": 72,
+          "recommended_items": 11
+        },
+        "rules": {
+          "recall_at_k": 0.2787037037037037,
+          "ndcg_at_k": 0.255964704059607,
+          "evaluated_users": 72,
+          "recommended_items": 7
+        },
+        "popularity": {
+          "recall_at_k": 0.3483796296296296,
+          "ndcg_at_k": 0.3571445802007083,
+          "evaluated_users": 72,
+          "recommended_items": 3
+        }
+      }
+    }
+  ],
+  "test_metrics": {
+    "als": {
+      "recall_at_k": 0.7293981481481482,
+      "ndcg_at_k": 0.7109724164638794,
+      "evaluated_users": 72,
+      "recommended_items": 11
+    },
+    "rules": {
+      "recall_at_k": 0.32337962962962963,
+      "ndcg_at_k": 0.2742426371111107,
+      "evaluated_users": 72,
+      "recommended_items": 7
+    },
+    "popularity": {
+      "recall_at_k": 0.381712962962963,
+      "ndcg_at_k": 0.38010245834649314,
+      "evaluated_users": 72,
+      "recommended_items": 3
+    }
+  },
+  "beats_both_baselines": true,
+  "production_approved": false,
+  "note": "Offline results only. Synthetic data is not evidence of production lift; human approval and online test required.",
+  "training_loss": [
+    1204.4640096436651,
+    628.411899535905,
+    583.3927561161729,
+    564.7150362865392,
+    553.8978993990243,
+    545.6057973090659,
+    539.2033649608079,
+    535.0958582298958,
+    532.6668405970654,
+    531.1901053340414,
+    530.2408314630088,
+    529.5997922027655,
+    529.1511944033131,
+    528.8296582981828,
+    528.5953607999617,
+    528.4224495298674,
+    528.2934413466107,
+    528.1962503760394,
+    528.1224104124049,
+    528.065918685667
+  ]
+}
